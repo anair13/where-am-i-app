@@ -1,5 +1,6 @@
 package com.example.treehacks;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,9 +20,12 @@ import android.hardware.Camera.PictureCallback;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -43,7 +47,7 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
     private Activity act;
 	private static float heading;
 	private static Location gps;
-   
+	private String url = "http://192.241.226.203/";
     
     public void onCreate(Bundle savedInstanceState) {
     	
@@ -94,25 +98,14 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
                     return;
                 }
                 try {
-                    FileOutputStream fos = new FileOutputStream(pictureFile);
-                    fos.write(data);
-                    fos.close();
-                    try {
-                    	Toast.makeText(act.getApplicationContext(),
-								   "LEARNING-- Heading: "+ CameraFragment.heading +", Coords: "+ CameraFragment.gps.toString(),
-								   Toast.LENGTH_LONG).show();
-                    } catch (NullPointerException e) {
+                	SendHttpRequestTask t = new SendHttpRequestTask(data);
+                	String[] params = new String[]{url, pictureFile.getName(), CameraFragment.gps.toString(), Float.toString(CameraFragment.heading)};
+                	t.execute(params);
+                } catch (NullPointerException e) {
                     Toast.makeText(act.getApplicationContext(),
-							   "LEARNING-- Your device does not have GPS or a compass enabled.",
-							   Toast.LENGTH_LONG).show();
-                	}
-                    // post_image_for learning(picture, gps)
-                	mCamera.startPreview();
-                } catch (FileNotFoundException e) {
-                    Log.d(TAG, "File not found: " + e.getMessage());
-                } catch (IOException e) {
-                    Log.d(TAG, "Error accessing file: " + e.getMessage());
-                }
+						   "LEARNING-- Your device does not have GPS or a compass enabled.",
+						   Toast.LENGTH_LONG).show();
+            	}
             }
         };
         
@@ -131,24 +124,11 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
                     Log.d(TAG, "Error creating media file, check storage permissions");
                     return;
                 }
+                
+                SendHttpRequestTask2 t = new SendHttpRequestTask2(data);
+                String[] params = new String[]{url, pictureFile.getName()};
+				t.execute(params);
 
-                try {
-                    FileOutputStream fos = new FileOutputStream(pictureFile);
-                    fos.write(data);
-                    fos.close();
-                    // Double lat, long = post_image_and get_response(picture)
-                    
-                    //brings up map (replace numbers with coordinates returned from POST request)
-                    mCamera.startPreview();
-                    getFragmentManager().beginTransaction()
-                    .add(R.id.container, new MapFragment(37.4, -122.5))
-                    .addToBackStack("replacingCamera")
-                    .commit();
-                } catch (FileNotFoundException e) {
-                    Log.d(TAG, "File not found: " + e.getMessage());
-                } catch (IOException e) {
-                    Log.d(TAG, "Error accessing file: " + e.getMessage());
-                }
             }
         };
         
@@ -260,4 +240,87 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
         }
         return c; // returns null if camera is unavailable
     }
+    
+    private class SendHttpRequestTask extends AsyncTask<String, Void, String> {
+
+    	byte[] data;
+    	
+		public SendHttpRequestTask(byte[] data) {
+			this.data = data;
+		}
+		
+		@Override
+		protected String doInBackground(String... params) {
+			String url = params[0];
+			Looper.prepare();
+			try {
+				HttpClient client = new HttpClient(url);
+				client.connectForMultipart();
+				if (params[2] != null) {client.addFormPart("gps", params[2]);}
+				if (params[3] != null) {client.addFormPart("heading", params[3]);}
+				client.addFilePart("file", params[1], this.data);
+				client.finishMultipart();
+				String response = client.getResponse();
+		
+                mCamera.startPreview();
+			}
+			catch(Throwable t) {
+				t.printStackTrace();
+			}
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String data) {			
+//			item.setActionView(null);
+			
+		}
+
+	}
+
+    private class SendHttpRequestTask2 extends AsyncTask<String, Void, String> {
+
+    	byte[] data;
+    	
+		public SendHttpRequestTask2(byte[] data) {
+			this.data = data;
+		}
+		
+		@Override
+		protected String doInBackground(String... params) {
+			String url = params[0];
+			Looper.prepare();
+			try {
+				HttpClient client = new HttpClient(url);
+				client.connectForMultipart();
+				client.addFilePart("file", params[1], this.data);
+				client.finishMultipart();
+				String response = client.getResponse();
+				
+				Toast.makeText(act.getApplicationContext(),
+						   "RESPONSE:"+ response,
+						   Toast.LENGTH_LONG).show();
+				
+                mCamera.startPreview();
+                getFragmentManager().beginTransaction()
+                .add(R.id.container, new MapFragment(37.4, -122.5))
+                .addToBackStack("replacingCamera")
+                .commit();
+			}
+			catch(Throwable t) {
+				t.printStackTrace();
+			}
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String data) {			
+//			item.setActionView(null);
+			
+		}
+
+	}
+
 }
