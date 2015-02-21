@@ -97,9 +97,15 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
                     FileOutputStream fos = new FileOutputStream(pictureFile);
                     fos.write(data);
                     fos.close();
-                	Toast.makeText(act.getApplicationContext(),
+                    try {
+                    	Toast.makeText(act.getApplicationContext(),
 								   "LEARNING-- Heading: "+ CameraFragment.heading +", Coords: "+ CameraFragment.gps.toString(),
 								   Toast.LENGTH_LONG).show();
+                    } catch (NullPointerException e) {
+                    Toast.makeText(act.getApplicationContext(),
+							   "LEARNING-- Your device does not have GPS or a compass enabled.",
+							   Toast.LENGTH_LONG).show();
+                	}
                     // post_image_for learning(picture, gps)
                 	mCamera.startPreview();
                 } catch (FileNotFoundException e) {
@@ -130,7 +136,9 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
                     FileOutputStream fos = new FileOutputStream(pictureFile);
                     fos.write(data);
                     fos.close();
-                    // post_image_and get_response(picture)
+                    // Double lat, long = post_image_and get_response(picture)
+                    
+                    //brings up map (replace numbers with coordinates returned from POST request)
                     mCamera.startPreview();
                     getFragmentManager().beginTransaction()
                     .add(R.id.container, new MapFragment(37.4, -122.5))
