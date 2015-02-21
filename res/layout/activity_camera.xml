@@ -10,13 +10,39 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_weight="1"
-    />
+    >
 
-  <Button
-      android:id="@+id/button_capture"
-      android:layout_width="36dp"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:text="O" />
+	  <RelativeLayout
+	      android:id="@+id/button_learning_layout"
+	      android:layout_width="wrap_content"
+	      android:layout_height="wrap_content"
+	      android:background="@android:color/transparent"
+	      android:orientation="vertical" >
+	
+	      <Button
+	          android:id="@+id/button_learning"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentTop="true"
+		        android:layout_alignParentRight="true"
+	          android:text="Learning" />
+	  </RelativeLayout>
 
+	    <RelativeLayout
+	        android:id="@+id/button_capture_layout"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="@android:color/transparent"
+	        android:orientation="vertical" >
+
+	        <Button
+	            android:id="@+id/button_capture"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentBottom="true"
+	            android:layout_alignParentRight="true"
+	            android:text="Capture" />
+	    </RelativeLayout>
+
+	</FrameLayout>
 </LinearLayout>

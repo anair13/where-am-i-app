@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -40,9 +41,42 @@ public class CameraActivity extends Activity {
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
         
+        final PictureCallback mLearning = new PictureCallback() {
+
+            
+            /* TODO:
+             * When Learning button is pressed, this method creates the .jpg
+             * (it should POST the image along with the coordinates/direction).
+             */
+        	@Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+
+                File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+                if (pictureFile == null){
+                    Log.d(TAG, "Error creating media file, check storage permissions");
+                    return;
+                }
+                try {
+                    FileOutputStream fos = new FileOutputStream(pictureFile);
+                    fos.write(data);
+                    fos.close();
+                    // post_image_for learning(picture, gps)
+                    // reset camera
+                } catch (FileNotFoundException e) {
+                    Log.d(TAG, "File not found: " + e.getMessage());
+                } catch (IOException e) {
+                    Log.d(TAG, "Error accessing file: " + e.getMessage());
+                }
+            }
+        };
         
         final PictureCallback mPicture = new PictureCallback() {
 
+            /* TODO:
+             * When Picture button is pressed, this method creates the .jpg
+             * (it should POST the image and get back the estimated location
+             * and bring up a map or something).
+             */
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
 
@@ -56,6 +90,8 @@ public class CameraActivity extends Activity {
                     FileOutputStream fos = new FileOutputStream(pictureFile);
                     fos.write(data);
                     fos.close();
+                    // post_image_and get_response(picture)
+                    // bring_up_map()
                 } catch (FileNotFoundException e) {
                     Log.d(TAG, "File not found: " + e.getMessage());
                 } catch (IOException e) {
@@ -63,6 +99,17 @@ public class CameraActivity extends Activity {
                 }
             }
         };
+        
+        Button learningButton = (Button) findViewById(R.id.button_learning);
+        learningButton.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // get an image from the camera
+                    mCamera.takePicture(null, null, mLearning);
+                }
+            }
+        );
         
         Button captureButton = (Button) findViewById(R.id.button_capture);
         captureButton.setOnClickListener(
@@ -74,6 +121,13 @@ public class CameraActivity extends Activity {
                 }
             }
         );
+        
+        RelativeLayout learningLayout = (RelativeLayout) findViewById(R.id.button_learning_layout);
+        learningLayout.bringToFront();
+ 
+        RelativeLayout captureLayout = (RelativeLayout) findViewById(R.id.button_capture_layout);
+        captureLayout.bringToFront();
+        
     }
     
     public static final int MEDIA_TYPE_IMAGE = 1;
