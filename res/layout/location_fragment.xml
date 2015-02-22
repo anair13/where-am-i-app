@@ -43,5 +43,12 @@
             android:padding="5dp"  />
 
 	</FrameLayout>
+     <ImageButton
+        android:layout_marginTop="100pt"
+        android:layout_marginLeft="10pt"
+        android:background="@drawable/speech_512"
+        android:layout_height="40dp"
+        android:layout_width="40dp"
+        android:id="@+id/speak" />
     
 </RelativeLayout>

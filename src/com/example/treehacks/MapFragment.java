@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.*;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v4.app.FragmentManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -14,9 +15,16 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.view.KeyEvent;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.view.View;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
+import android.content.Intent;
+import java.util.Locale;
 
-
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements OnClickListener, OnInitListener  {
 
 private static View view;
 /**
@@ -29,6 +37,8 @@ private static GoogleMap mMap;
 private static Double latitude, longitude;
 private static String name, caption;
 private static TextView tv;
+private int MY_DATA_CHECK_CODE = 0;
+private TextToSpeech myTTS;
 
 public MapFragment(Double latitude, Double longitude, String name, String caption) {
 	MapFragment.latitude = latitude;
@@ -56,6 +66,11 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container,
     // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Mapm 
     setUpMapIfNeeded(); // For setting up the MapFragment
     
+    ImageButton speakButton = (ImageButton) view.findViewById(R.id.speak);
+    speakButton.setOnClickListener(this);
+    
+    myTTS = new TextToSpeech(getActivity(), this);
+    
     view.setFocusableInTouchMode(true);
     view.requestFocus();
     view.setOnKeyListener(new View.OnKeyListener() {
@@ -72,6 +87,28 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container,
     
     return view;
 }
+
+public void onClick(View v) {
+	 TextView name = (TextView)view.findViewById(R.id.name);
+	 String title = name.getText().toString();
+	 TextView caption = (TextView)view.findViewById(R.id.caption);
+	 String words = caption.getText().toString();
+	 myTTS.speak(title, TextToSpeech.QUEUE_FLUSH, null);
+	 try{Thread.sleep(1500); }
+	 catch (InterruptedException ex) { Thread.currentThread().interrupt(); };
+	 myTTS.speak(words, TextToSpeech.QUEUE_ADD, null);
+}
+
+private void speakWords(String speech){
+	 myTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+}
+
+public void onInit(int initStatus) {
+//	 if (initStatus == TextToSpeech.SUCCESS){
+		 myTTS.setLanguage(Locale.US);
+//	 }
+}
+
 
 /***** Sets up the map if it is possible to do so *****/
 public static void setUpMapIfNeeded() {

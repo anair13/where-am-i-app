@@ -2071,6 +2071,7 @@ containing a value of this type.
         public static final int ic_plusone_tall_off_client=0x7f020052;
         public static final int powered_by_google_dark=0x7f020053;
         public static final int powered_by_google_light=0x7f020054;
+        public static final int speech_512=0x7f020055;
     }
     public static final class id {
         public static final int action_bar=0x7f0c0045;
@@ -2086,7 +2087,7 @@ containing a value of this type.
         public static final int action_mode_bar=0x7f0c0042;
         public static final int action_mode_bar_stub=0x7f0c0041;
         public static final int action_mode_close_button=0x7f0c0034;
-        public static final int action_settings=0x7f0c005e;
+        public static final int action_settings=0x7f0c005f;
         public static final int activity_chooser_view_content=0x7f0c0035;
         public static final int adjust_height=0x7f0c0009;
         public static final int adjust_width=0x7f0c000a;
@@ -2128,7 +2129,7 @@ containing a value of this type.
         public static final int location_map=0x7f0c005a;
         public static final int map_container=0x7f0c0059;
         public static final int match_parent=0x7f0c0017;
-        public static final int menu_switch_cam=0x7f0c005d;
+        public static final int menu_switch_cam=0x7f0c005e;
         public static final int middle=0x7f0c0031;
         public static final int monochrome=0x7f0c001f;
         public static final int name=0x7f0c005b;
@@ -2156,6 +2157,7 @@ containing a value of this type.
         public static final int showCustom=0x7f0c0024;
         public static final int showHome=0x7f0c0025;
         public static final int showTitle=0x7f0c0026;
+        public static final int speak=0x7f0c005d;
         public static final int split_action_bar=0x7f0c0004;
         public static final int strict_sandbox=0x7f0c0014;
         public static final int submit_area=0x7f0c0050;

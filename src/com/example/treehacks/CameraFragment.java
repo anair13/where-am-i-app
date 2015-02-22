@@ -268,10 +268,12 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
     	                .addToBackStack("replacingCamera")
     	                .commit();
                 } else {
+                	Double latitude = Double.parseDouble(mainObject.getString("latitude"));
+    				Double longitude = Double.parseDouble(mainObject.getString("longitude"));
                     String name = mainObject.getString("Name");
                     String caption = mainObject.getString("Description");
                     getFragmentManager().beginTransaction()
-    	                .add(R.id.container, new MapFragment(name, caption))
+    	                .add(R.id.container, new MapFragment(latitude, longitude, name, caption))
     	                .addToBackStack("replacingCamera")
     	                .commit();
                 }

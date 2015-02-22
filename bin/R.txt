@@ -431,6 +431,7 @@ int drawable ic_plusone_standard_off_client 0x7f020051
 int drawable ic_plusone_tall_off_client 0x7f020052
 int drawable powered_by_google_dark 0x7f020053
 int drawable powered_by_google_light 0x7f020054
+int drawable speech_512 0x7f020055
 int id action_bar 0x7f0c0045
 int id action_bar_activity_content 0x7f0c0003
 int id action_bar_container 0x7f0c0044
@@ -444,7 +445,7 @@ int id action_menu_presenter 0x7f0c0006
 int id action_mode_bar 0x7f0c0042
 int id action_mode_bar_stub 0x7f0c0041
 int id action_mode_close_button 0x7f0c0034
-int id action_settings 0x7f0c005e
+int id action_settings 0x7f0c005f
 int id activity_chooser_view_content 0x7f0c0035
 int id adjust_height 0x7f0c0009
 int id adjust_width 0x7f0c000a
@@ -486,7 +487,7 @@ int id list_item 0x7f0c0039
 int id location_map 0x7f0c005a
 int id map_container 0x7f0c0059
 int id match_parent 0x7f0c0017
-int id menu_switch_cam 0x7f0c005d
+int id menu_switch_cam 0x7f0c005e
 int id middle 0x7f0c0031
 int id monochrome 0x7f0c001f
 int id name 0x7f0c005b
@@ -514,6 +515,7 @@ int id shortcut 0x7f0c003e
 int id showCustom 0x7f0c0024
 int id showHome 0x7f0c0025
 int id showTitle 0x7f0c0026
+int id speak 0x7f0c005d
 int id split_action_bar 0x7f0c0004
 int id strict_sandbox 0x7f0c0014
 int id submit_area 0x7f0c0050
