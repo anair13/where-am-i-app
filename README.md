@@ -1,18 +1,6 @@
-# where-am-i-app
-Android app for image localization
+# Wanderlust-TourGuidr
+Android app for image localization and historical learning.
 
-### Features: 
-######(_italics_ = in progress)
-- Clicking on "Learning" should get image and position/heading data, _and send it to server for analysis_
- - if device has no gps (like my Nexus 7), display error message
-- Clicking on "Capture" should _send image to server, get response coordinates, and_ display a map of the location.
+Our app is designed to help you on your journey exploring the world! The idea was to be able to visit famous places and get a whole automated intelligent tour of the sites you visit. That way, you won't ever get bored and you'll get an interesting history lesson on the significance of the sites you visit.
 
-
-####App to-do's: (highest priority first)
-- get http requests working 
-- fix back button crashes (most notably, from map back to camera)
-- make screen vertical without making camera turn sideways
-
-##### In the end:
- - remove "learning" button
- - remove text that shows the direction 
+##### Created by Ashvin Nair, Walid Rahman, Kai Si, Susanna Souv  @ Treehacks Winter 2014
