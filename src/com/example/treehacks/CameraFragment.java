@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -31,6 +33,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,9 +48,10 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
     private Sensor mCompass;
     private TextView mTextView;
     private Activity act;
+    private Switch switch1;
 	private static float heading;
 	private static Location gps;
-	private String url = "http://192.241.226.203/";
+	private String url;
     
     public void onCreate(Bundle savedInstanceState) {
     	
@@ -68,11 +72,10 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         
         super.onCreate(savedInstanceState);
-        this.act.setContentView(R.layout.activity_camera);
+        this.act.setContentView(R.layout.fragment_camera);
 
         mSensorManager = (SensorManager) act.getSystemService("sensor");
         mCompass = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        mTextView = (TextView) this.act.findViewById(R.id.heading);
         
         // Create an instance of Camera
         mCamera = getCameraInstance();
@@ -125,24 +128,20 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
                     return;
                 }
                 
-                SendHttpRequestTask2 t = new SendHttpRequestTask2(data);
+                switch1 = (Switch) act.findViewById(R.id.switch1);
+            	if (!switch1.isChecked()) {
+            		url = "http://192.241.226.203/wonders/";
+            	} else {
+            		url = "http://192.241.226.203/guide/";
+            	}
+            	
+                SendHttpRequestTask t = new SendHttpRequestTask(data);
                 String[] params = new String[]{url, pictureFile.getName()};
 				t.execute(params);
 
             }
         };
-        
-        // Sets onClick handlers for buttons
-        Button learningButton = (Button) act.findViewById(R.id.button_learning);
-        learningButton.setOnClickListener(
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // get an image from the camera
-                    mCamera.takePicture(null, null, mLearning);
-                }
-            }
-        );
+
         
         Button captureButton = (Button) act.findViewById(R.id.button_capture);
         captureButton.setOnClickListener(
@@ -156,19 +155,16 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
         );
         
         // Brings buttons to front
-        RelativeLayout learningLayout = (RelativeLayout) act.findViewById(R.id.button_learning_layout);
+        RelativeLayout learningLayout = (RelativeLayout) act.findViewById(R.id.switch_layout);
         learningLayout.bringToFront();
  
         RelativeLayout captureLayout = (RelativeLayout) act.findViewById(R.id.button_capture_layout);
         captureLayout.bringToFront();
-        
-        RelativeLayout headingLayout = (RelativeLayout) act.findViewById(R.id.heading_layout);
-        headingLayout.bringToFront();
     }
     
     public void onAccuracyChanged(Sensor sensor, int accuracy) {    
     }
-    
+
 	 // The following method is required by the SensorEventListener interface;
 	 // Hook this event to process updates;
 	 public void onSensorChanged(SensorEvent event) {
@@ -176,7 +172,6 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
 	     // The other values provided are: 
 	     //  float pitch = event.values[1];
 	     //  float roll = event.values[2];
-	     mTextView.setText("Azimuth: " + Float.toString(azimuth));
 	     CameraFragment.heading = azimuth;
 	 }
 	
@@ -240,7 +235,7 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
         }
         return c; // returns null if camera is unavailable
     }
-    
+
     private class SendHttpRequestTask extends AsyncTask<String, Void, String> {
 
     	byte[] data;
@@ -256,57 +251,32 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
 			try {
 				HttpClient client = new HttpClient(url);
 				client.connectForMultipart();
-				if (params[2] != null) {client.addFormPart("gps", params[2]);}
-				if (params[3] != null) {client.addFormPart("heading", params[3]);}
 				client.addFilePart("file", params[1], this.data);
 				client.finishMultipart();
 				String response = client.getResponse();
-		
+				JSONObject mainObject = new JSONObject(response);
                 mCamera.startPreview();
-			}
-			catch(Throwable t) {
-				t.printStackTrace();
-			}
-			
-			return null;
-		}
+                Log.i("BOOL", url);
 
-		@Override
-		protected void onPostExecute(String data) {			
-//			item.setActionView(null);
-			
-		}
-
-	}
-
-    private class SendHttpRequestTask2 extends AsyncTask<String, Void, String> {
-
-    	byte[] data;
-    	
-		public SendHttpRequestTask2(byte[] data) {
-			this.data = data;
-		}
-		
-		@Override
-		protected String doInBackground(String... params) {
-			String url = params[0];
-			Looper.prepare();
-			try {
-				HttpClient client = new HttpClient(url);
-				client.connectForMultipart();
-				client.addFilePart("file", params[1], this.data);
-				client.finishMultipart();
-				String response = client.getResponse();
+                if (!switch1.isChecked()) {
+                	Double latitude = Double.parseDouble(mainObject.getString("latitude"));
+    				Double longitude = Double.parseDouble(mainObject.getString("longitude"));
+                    String name = mainObject.getString("name");
+                    String caption = mainObject.getString("caption");
+                    getFragmentManager().beginTransaction()
+    	                .add(R.id.container, new MapFragment(latitude, longitude, name, caption))
+    	                .addToBackStack("replacingCamera")
+    	                .commit();
+                } else {
+                    String name = mainObject.getString("Name");
+                    String caption = mainObject.getString("Description");
+                    getFragmentManager().beginTransaction()
+    	                .add(R.id.container, new MapFragment(name, caption))
+    	                .addToBackStack("replacingCamera")
+    	                .commit();
+                }
 				
-				Toast.makeText(act.getApplicationContext(),
-						   "RESPONSE:"+ response,
-						   Toast.LENGTH_LONG).show();
-				
-                mCamera.startPreview();
-                getFragmentManager().beginTransaction()
-                .add(R.id.container, new MapFragment(37.4, -122.5))
-                .addToBackStack("replacingCamera")
-                .commit();
+
 			}
 			catch(Throwable t) {
 				t.printStackTrace();
@@ -324,3 +294,6 @@ public class CameraFragment extends Fragment implements SensorEventListener  {
 	}
 
 }
+
+	 
+  

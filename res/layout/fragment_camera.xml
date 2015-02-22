@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent"
+    >
+  <FrameLayout
+    android:id="@+id/camera_preview"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    >
+	  <RelativeLayout
+	      android:id="@+id/switch_layout"
+	      android:layout_width="wrap_content"
+	      android:layout_height="wrap_content"
+	      android:background="@android:color/transparent"
+	      android:orientation="vertical" >
+
+	      <Switch
+	          android:id="@+id/switch1"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentTop="true"
+	          android:layout_alignParentRight="true"
+	          android:text="" />
+	
+	  </RelativeLayout>
+
+	    <RelativeLayout
+	        android:id="@+id/button_capture_layout"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="@android:color/transparent"
+	        android:orientation="vertical" >
+
+	        <Button
+	            android:id="@+id/button_capture"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentBottom="true"
+	            android:layout_alignParentRight="true"
+	            android:text="Capture" />
+
+	    </RelativeLayout>
+
+	</FrameLayout>
+</LinearLayout>

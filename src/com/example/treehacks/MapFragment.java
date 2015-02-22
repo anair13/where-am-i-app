@@ -5,10 +5,15 @@ import com.google.android.gms.maps.model.*;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.view.KeyEvent;
 
 
 public class MapFragment extends Fragment {
@@ -19,12 +24,25 @@ private static View view;
  * available.
  */
 
+private static Activity act;
 private static GoogleMap mMap;
 private static Double latitude, longitude;
+private static String name, caption;
+private static TextView tv;
 
-public MapFragment(Double latitude, Double longitude) {
+public MapFragment(Double latitude, Double longitude, String name, String caption) {
 	MapFragment.latitude = latitude;
 	MapFragment.longitude = longitude;
+	MapFragment.name = name;
+	MapFragment.caption = caption;
+}
+
+
+public MapFragment(String name, String description) {
+	MapFragment.latitude = 69.69;
+	MapFragment.longitude = 96.96;
+	MapFragment.name = name;
+	MapFragment.caption = description;
 }
 
 @Override
@@ -34,9 +52,24 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container,
         return null;
     }
     view = (RelativeLayout) inflater.inflate(R.layout.location_fragment, container, false);
-    // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Map
-            setUpMapIfNeeded(); // For setting up the MapFragment
-
+	act = getActivity();
+    // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Mapm 
+    setUpMapIfNeeded(); // For setting up the MapFragment
+    
+    view.setFocusableInTouchMode(true);
+    view.requestFocus();
+    view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if( keyCode == KeyEvent.KEYCODE_BACK ) {
+                    getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    
     return view;
 }
 
@@ -48,8 +81,9 @@ public static void setUpMapIfNeeded() {
         mMap = ((SupportMapFragment) CameraActivity.fragmentManager
                 .findFragmentById(R.id.location_map)).getMap();
         // Check if we were successful in obtaining the map.
-        if (mMap != null)
+        if (mMap != null) {
             setUpMap();
+	    }
     }
 }
 
@@ -81,10 +115,25 @@ public void onViewCreated(View view, Bundle savedInstanceState) {
         mMap = ((SupportMapFragment) CameraActivity.fragmentManager
                 .findFragmentById(R.id.location_map)).getMap(); // getMap is deprecated
         // Check if we were successful in obtaining the map.
-        if (mMap != null)
+        if (mMap != null){
+        	
             setUpMap();
     }
+        
+  }
+    while (true) {
+	    try {
+	    	tv= (TextView) act.findViewById(R.id.name);
+	        tv.setText(MapFragment.name);
+	        tv= (TextView) act.findViewById(R.id.caption);
+	        tv.setText(MapFragment.caption);
+	        tv.setMovementMethod(new ScrollingMovementMethod());
+	        setUpMapIfNeeded(); 
+	        break;
+	    }catch (NullPointerException e) {}
+	}
 }
+
 
 /**** The mapfragment's id must be removed from the FragmentManager
  **** or else if the same it is passed on the next time then 

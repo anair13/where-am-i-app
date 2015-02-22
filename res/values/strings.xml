@@ -11,4 +11,6 @@
     <string name="camera_not_found">No camera harDware found</string>
     <string name="toast_error_camera_preview">Error</string>
     <string name="switch_camera">Switch Camera</string>
+    <string name="title_section_1">Explore da World</string>
+    <string name="title_section_2">Campus Tour</string>
 </resources>
